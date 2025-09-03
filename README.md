@@ -6,4 +6,8 @@
 [AHomeworkActor.h](https://github.com/mw08081/sparta_cpp_homework_5/blob/main/Source/Basis/HomeworkActor.h)  
 [AHomeworkActor.cpp](https://github.com/mw08081/sparta_cpp_homework_5/blob/main/Source/Basis/HomeworkActor.cpp)  
 
-![homework5](https://github.com/user-attachments/assets/e6991b91-5ae3-4b70-8e74-172be1f90eb6)
+과제 포인트
+- Tick을 사용하지 않고, Timer사용
+
+![homework5](https://github.com/user-attachments/assets/4a5b00a7-674b-4425-8663-7430c366ac3f)
+
