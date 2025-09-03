@@ -30,7 +30,7 @@ ABulletBase::ABulletBase()
 
 // Called when the game starts or when spawned
 void ABulletBase::BeginPlay()
-{
+{ 
 	Super::BeginPlay();
 
 	StaticMeshComponent->OnComponentHit.AddDynamic(this, &ABulletBase::OnHit);

@@ -6,6 +6,8 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "System/BasisDefaultGameMode.h"
+#include "Character/CharacterBase.h"
+#include "Weapon/WeaponBase.h"
 
 // Sets default values
 ACharacterBase::ACharacterBase()
@@ -29,6 +31,10 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::Attack()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Character Base Attack"));
+	if (Weapon != nullptr)
+	{
+		Weapon->Fire();
+	}
 }
 
 void ACharacterBase::Hit(int32 Damage, AActor* ByWho)

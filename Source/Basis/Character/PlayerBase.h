@@ -47,13 +47,5 @@ private:
 	void Look(const struct FInputActionValue& Value);
 	void Fire(const struct FInputActionValue& Value);
 	void Zoom(const struct FInputActionValue& Value);
-	
-
-private:
-	UPROPERTY(EditDefaultsOnly, Category = "weapon")
-	TSubclassOf<class AWeaponBase> WeaponClass;
-
-	UPROPERTY(VisibleAnywhere, Category = "weapon")
-	class AWeaponBase* Weapon;
 
 };

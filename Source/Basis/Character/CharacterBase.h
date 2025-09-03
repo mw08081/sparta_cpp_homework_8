@@ -37,6 +37,13 @@ protected:
 	int32 KillCount = 0;
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "weapon")
+	TSubclassOf<class AWeaponBase> WeaponClass;
+
+	UPROPERTY(VisibleAnywhere, Category = "weapon")
+	class AWeaponBase* Weapon;
+
+public:
 	virtual void Attack();
 
 	UFUNCTION(BlueprintCallable)

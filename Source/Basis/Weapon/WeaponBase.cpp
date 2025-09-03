@@ -8,6 +8,7 @@
 #include "Weapon/BulletBase.h"
 #include "Character/CharacterBase.h"
 #include "Character/PlayerBase.h"
+#include <AI/AIControllerBase.h>
 
 // Sets default values
 AWeaponBase::AWeaponBase()
@@ -46,27 +47,37 @@ void AWeaponBase::Fire()
 
 		// APlayerBase로 캐스팅 하면 안되나? Enemy가 총을 쏠 수 있잖아..
 		// PlayerController->GetViewportSize(x, y); 이래.. 그럼 이것도 오버라이딩해서 에너미랑 플레이어로 구분하는게 좋을듯.. 
-		APlayerBase* WeaponOwner = Cast<APlayerBase>(GetOwner());
+		ACharacterBase* WeaponOwner = Cast<APlayerBase>(GetOwner());
 		if (!IsValid(WeaponOwner)) return;
 
-		APlayerController* PlayerController = Cast<APlayerController>(WeaponOwner->GetController());
-		if (!IsValid(PlayerController)) return;
+		AController* WeaponOwnerController = WeaponOwner->GetController();
+		if (!IsValid(WeaponOwner)) return;
 
-		int32 x, y;
-		PlayerController->GetViewportSize(x, y);
-		
-		// WorldCenter의 존재 이유가 뭘까???
-		FVector WorldCenter;
-		FVector WorldFront;
-		PlayerController->DeprojectScreenPositionToWorld(x * 0.5f, y * 0.5f, WorldCenter, WorldFront);
 
-		//UE_LOG(LogTemp, Display, TEXT("World Center: %s"), *WorldCenter.ToCompactString());
+		if (APlayerController* PlayerController = Cast<APlayerController>(WeaponOwnerController))
+		{
+			int32 x, y;
+			PlayerController->GetViewportSize(x, y);
 
-		WorldCenter += WorldFront * 10000;
-		SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, WorldCenter);
+			// WorldCenter의 존재 이유가 뭘까???
+			FVector WorldCenter;
+			FVector WorldFront;
+			PlayerController->DeprojectScreenPositionToWorld(x * 0.5f, y * 0.5f, WorldCenter, WorldFront);
 
-		GetWorld()->SpawnActor<ABulletBase>(BulletClass, SpawnLocation, SpawnRotation, SpawnParams);
+			//UE_LOG(LogTemp, Display, TEXT("World Center: %s"), *WorldCenter.ToCompactString());
 
+			WorldCenter += WorldFront * 10000;
+			SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, WorldCenter);
+
+			GetWorld()->SpawnActor<ABulletBase>(BulletClass, SpawnLocation, SpawnRotation, SpawnParams);
+		} 
+		else if (AAIControllerBase* AIController = Cast<AAIControllerBase>(WeaponOwnerController))
+		{
+			APawn* TargetPawn = GetWorld()->GetFirstPlayerController()->GetPawn();
+
+			SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetPawn->GetActorLocation());
+			GetWorld()->SpawnActor<ABulletBase>(BulletClass, SpawnLocation, SpawnRotation, SpawnParams);
+		}
 	}
 }
 

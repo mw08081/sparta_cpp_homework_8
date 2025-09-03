@@ -9,8 +9,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 
+
 #include "System/BasisDefaultGameMode.h"
 #include "Weapon/WeaponBase.h"
+#include "Character/CharacterBase.h"
 
 APlayerBase::APlayerBase()
 {
@@ -26,9 +28,11 @@ void APlayerBase::BeginPlay()
 	Super::BeginPlay();
 
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if (IsValid(PlayerController)) {
+	if (IsValid(PlayerController)) 
+	{
 		ULocalPlayer* Player = PlayerController->GetLocalPlayer();
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Player)) {
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(Player))
+		{
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
@@ -37,7 +41,8 @@ void APlayerBase::BeginPlay()
 	CameraBoom->SocketOffset = FVector(0, 60, 60);
 
 	Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
-	if (IsValid(Weapon)) {
+	if (IsValid(Weapon))
+	{
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Weapon->AttachToComponent(GetMesh(), TransformRules, TEXT("WeaponSocket"));
 		Weapon->SetOwner(this);
@@ -74,7 +79,8 @@ void APlayerBase::Look(const FInputActionValue& Value)
 {
 	FVector2d LookAxis = Value.Get<FVector2D>();
 
-	if (Controller != nullptr) {
+	if (Controller != nullptr) 
+	{
 		AddControllerYawInput(LookAxis.X);
 		AddControllerPitchInput(LookAxis.Y * -1);
 	}
@@ -91,11 +97,13 @@ void APlayerBase::Zoom(const FInputActionValue& Value)
 	float WheelDirection = Value.Get<float>();
 
 
-	if (WheelDirection > 0) {
+	if (WheelDirection > 0)
+	{
 		CameraBoom->TargetArmLength = 40;
 		CameraBoom->SocketOffset = FVector(0, 40, 60);
 	}
-	else {
+	else 
+	{
 		CameraBoom->TargetArmLength = 120;
 		CameraBoom->SocketOffset = FVector(0, 60, 60);
 	}
@@ -105,24 +113,34 @@ void APlayerBase::Zoom(const FInputActionValue& Value)
 void APlayerBase::Attack()
 {
 	Super::Attack();
-
-	if (IsValid(Weapon)) {
-		Weapon->Fire();
-	}
+	UE_LOG(LogTemp, Display, TEXT("playre base attack"));
 }
 
 void APlayerBase::Hit(int32 Damage, AActor* ByWho)
 {
 	Super::Hit(Damage, ByWho);
 
-	if (CurHP <= 0) {
+	if (CurHP <= 0) 
+	{
 		CurHP = 0;
 	}
 
 	CurGameMode->SetPlayerHP((float)CurHP / MaxHP);
 
-	if (CurHP <= 0) {
+	if (CurHP <= 0) 
+	{
 		Destroy();
+		if (IsValid(Weapon))
+		{
+			Weapon->Destroy();
+		}
+
+		// temp.. no need to calc enemy's kill count
+		APlayerBase* Killer = Cast<APlayerBase>(ByWho);
+		if (IsValid(Killer))
+		{
+			Killer->IncreaseKillCount();
+		}
 	}
 }
 
