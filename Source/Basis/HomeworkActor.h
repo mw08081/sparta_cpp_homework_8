@@ -25,10 +25,15 @@ private:
 
 private:
 	FTimerHandle MovingLogicTimerHandler;
+	FVector InitLocation;
+
 	float MovingInterval = 0.5f;
 	int MovingCnt = 0;
+	int EventCnt = 0;
 
 private:
 	void Move();
 	int32 GetStep();
+
+	void EventFunc();
 };

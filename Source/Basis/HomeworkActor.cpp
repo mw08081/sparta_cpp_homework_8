@@ -20,24 +20,40 @@ void AHomeworkActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	InitLocation = GetActorLocation();
 	GetWorldTimerManager().SetTimer(MovingLogicTimerHandler, this, &AHomeworkActor::Move, MovingInterval, true);
 }
 
 void AHomeworkActor::Move()
 {
+	// 현재위치를 기반으로 새로운 위치를 설정
 	FVector CurLocation = GetActorLocation();
 	SetActorLocation(FVector(CurLocation.X + GetStep(), CurLocation.Y + GetStep(), CurLocation.Z));
 	
+	// 이벤트 발생 여부 판단
+	if (FMath::RandRange(0.f, 1.f) > 0.5)
+	{
+		EventFunc();
+	}
+
+	// 무빙카운트에 따른 작업분기
 	if (MovingCnt++ < 10) { 
-		UE_LOG(LogTemp, Error, TEXT("Moved(%d) - %s"), MovingCnt, *GetActorLocation().ToCompactString());
+		UE_LOG(LogTemp, Error, TEXT("Moved(%d) - CurLocation: %s, Moved Distande: %f"), MovingCnt, *GetActorLocation().ToCompactString(), FVector::Dist(GetActorLocation(), CurLocation));
 	}
 	else {
 		GetWorldTimerManager().ClearTimer(MovingLogicTimerHandler);
+		UE_LOG(LogTemp, Warning, TEXT("Moving Finished - Total Moving Distance: %f, Total Event Count: %d"), FVector::Dist(GetActorLocation(), InitLocation), EventCnt);
 	}
 }
 
 int32 AHomeworkActor::GetStep()
 {
 	return FMath::RandRange(0.f, 2.f);
+}
+
+void AHomeworkActor::EventFunc()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Event occurred!!!"));
+	EventCnt++;
 }
 
