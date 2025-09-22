@@ -46,6 +46,8 @@ void APlayerBase::BeginPlay()
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Weapon->AttachToComponent(GetMesh(), TransformRules, TEXT("WeaponSocket"));
 		Weapon->SetOwner(this);
+
+		Weapon->SetActorRelativeLocation(FVector(-0.223613, -6.477133, -2.791346));
 	}
 
 	CurGameMode->SetPlayerHP(CurHP / MaxHP);
@@ -59,8 +61,12 @@ void APlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputControll
 	{
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerBase::Move);
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerBase::Look);
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &APlayerBase::Fire);
-		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &APlayerBase::Zoom);
+		
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Started, this, &APlayerBase::Zoom);
+		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Completed, this, &APlayerBase::Zoom);
+
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &APlayerBase::EnterFire);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &APlayerBase::ExitFire);
 	}
 }
 
@@ -86,23 +92,18 @@ void APlayerBase::Look(const FInputActionValue& Value)
 	}
 }
 
-void APlayerBase::Fire(const FInputActionValue& Value)
-{
-	Attack();
-}
-
 void APlayerBase::Zoom(const FInputActionValue& Value)
 {
 	if (!IsValid(CameraBoom)) return;
-	float WheelDirection = Value.Get<float>();
+	bool OnMouseButtonDown = Value.Get<bool>();
 
 
-	if (WheelDirection > 0)
+	if (OnMouseButtonDown)
 	{
 		CameraBoom->TargetArmLength = 40;
 		CameraBoom->SocketOffset = FVector(0, 40, 60);
 	}
-	else 
+	else
 	{
 		CameraBoom->TargetArmLength = 120;
 		CameraBoom->SocketOffset = FVector(0, 60, 60);
@@ -110,10 +111,31 @@ void APlayerBase::Zoom(const FInputActionValue& Value)
 }
 
 
+void APlayerBase::EnterFire(const FInputActionValue& Value)
+{
+	if (Weapon == nullptr) return;
+
+	float FireInterval = (float)60 / Weapon->WeaponRpm;
+	GetWorld()->GetTimerManager().SetTimer(FireHandle, this, &APlayerBase::Attack, FireInterval, true);
+}
+
+
+void APlayerBase::ExitFire(const FInputActionValue& Value)
+{
+	GetWorld()->GetTimerManager().ClearTimer(FireHandle);
+}
+
 void APlayerBase::Attack()
 {
-	Super::Attack();
+	// 1회성 공격인 Super::Attack()에 대해서 주석 처리.
+	//Super::Attack(); 
+
 	UE_LOG(LogTemp, Display, TEXT("playre base attack"));
+	if (Weapon != nullptr)
+	{
+		Weapon->Fire();
+		AddControllerPitchInput(FMath::FRandRange(-0.5f,-0.2f));
+	}
 }
 
 void APlayerBase::Hit(int32 Damage, AActor* ByWho)

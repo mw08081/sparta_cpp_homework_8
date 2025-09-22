@@ -45,7 +45,10 @@ private:
 
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
-	void Fire(const struct FInputActionValue& Value);
 	void Zoom(const struct FInputActionValue& Value);
 
+
+	void EnterFire(const struct FInputActionValue& Value);
+	void ExitFire(const struct FInputActionValue& Value);
+	FTimerHandle FireHandle;
 };

@@ -35,6 +35,8 @@ public:
 public:	
 	virtual void Fire();
 	
+	UPROPERTY(EditAnywhere)
+	int32 WeaponRpm = 500;
 
 
 };
