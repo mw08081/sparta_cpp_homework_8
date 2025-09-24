@@ -42,7 +42,7 @@ void ATrainingTarget::Tick(float DeltaTime)
 
 
 			if (IsAutoReturn && IsPositiveSide) {
-				GetWorld()->GetTimerManager().SetTimer(AutoReturnHandle, this, &ATrainingTarget::ExecRot, FMath::RandRange(1.f, 3.f), false);
+				GetWorld()->GetTimerManager().SetTimer(AutoReturnHandle, this, &ATrainingTarget::ExecRot, FMath::RandRange(1.f, 4.f), false);
 			}
 
 			IsPositiveSide = !IsPositiveSide;
@@ -54,6 +54,9 @@ void ATrainingTarget::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 {
 	// 동작중이라면 실행하지 않음
 	//if (IsShouldTurn == true) return;
+
+	// 자동으로 돌아오는 타겟이 뒤집어져있다면, 실행하지않음
+	if (IsAutoReturn && IsPositiveSide == false) return;
 
 	ExecRot();
 }
