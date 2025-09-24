@@ -51,18 +51,20 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 		Target->Hit(WeaponOwner->Strength, WeaponOwner);
 	}
 
-	FRotator DecalRotation = Hit.ImpactNormal.Rotation();
-	DecalRotation.Roll = FMath::FRand() * 360.f; // 무작위 회전으로 다양함 추가
+	//FRotator DecalRotation = Hit.ImpactNormal.Rotation();
+	//DecalRotation.Roll = FMath::FRand() * 360.f; // 무작위 회전으로 다양함 추가
 
-	// 데칼 스폰
-	UGameplayStatics::SpawnDecalAtLocation(
-		GetWorld(),
-		BulletDecalMaterial,
-		DecalSize,
-		Hit.ImpactPoint,
-		DecalRotation,
-		10.f
-	);
+	//// 데칼 스폰
+	//UGameplayStatics::SpawnDecalAtLocation(
+	//	GetWorld(),
+	//	BulletDecalMaterial,
+	//	FVector(10, 10, 10),
+	//	Hit.ImpactPoint,
+	//	DecalRotation,
+	//	10.f
+	//);
+
+	//UE_LOG(LogTemp, Display, TEXT("spawn decal"));
 
 	Destroy();
 }
