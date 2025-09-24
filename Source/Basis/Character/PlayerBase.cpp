@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 
+#include "AI/AIControllerBase.h"
 
 #include "System/BasisDefaultGameMode.h"
 #include "Weapon/WeaponBase.h"
@@ -66,7 +67,9 @@ void APlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputControll
 		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Completed, this, &APlayerBase::Zoom);
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &APlayerBase::EnterFire);
-		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &APlayerBase::ExitFire);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, (void (APlayerBase::*)(const FInputActionValue&)) &APlayerBase::ExitFire);
+
+		EnhancedInputComponent->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APlayerBase::Reload);
 	}
 }
 
@@ -114,8 +117,9 @@ void APlayerBase::Zoom(const FInputActionValue& Value)
 void APlayerBase::EnterFire(const FInputActionValue& Value)
 {
 	if (Weapon == nullptr) return;
+	if (bCanAttack == false) return;
 
-	float FireInterval = (float)60 / Weapon->WeaponRpm;
+	const float FireInterval = Weapon->GetFireInterval();
 	GetWorld()->GetTimerManager().SetTimer(FireHandle, this, &APlayerBase::Attack, FireInterval, true);
 }
 
@@ -125,16 +129,37 @@ void APlayerBase::ExitFire(const FInputActionValue& Value)
 	GetWorld()->GetTimerManager().ClearTimer(FireHandle);
 }
 
+void APlayerBase::ExitFire()
+{
+	GetWorld()->GetTimerManager().ClearTimer(FireHandle);
+}
+
+void APlayerBase::Reload(const FInputActionValue& Value)
+{
+	if (Weapon == nullptr) return;
+
+	//Weapon->Reload();
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance == nullptr) return;
+
+	// 사격 중지
+	ExitFire();
+	SetCanAttack(false);
+	
+	// Nofiy -> Weapon->Reload && this->bCanAttack = true;
+	AnimInstance->Montage_Play(AMM_Reload); 
+}
+
 void APlayerBase::Attack()
 {
 	// 1회성 공격인 Super::Attack()에 대해서 주석 처리.
 	//Super::Attack(); 
 
-	UE_LOG(LogTemp, Display, TEXT("playre base attack"));
 	if (Weapon != nullptr)
 	{
-		Weapon->Fire();
-		AddControllerPitchInput(FMath::FRandRange(-0.5f,-0.2f));
+		bool FireRes = Weapon->Fire();
+		if(FireRes) AddControllerPitchInput(FMath::FRandRange(-0.8f,-0.3f));
 	}
 }
 
@@ -147,7 +172,10 @@ void APlayerBase::Hit(int32 Damage, AActor* ByWho)
 		CurHP = 0;
 	}
 
-	CurGameMode->SetPlayerHP((float)CurHP / MaxHP);
+	if (!GetController()->IsA(AAIController::StaticClass()))
+	{
+		CurGameMode->SetPlayerHP((float)CurHP / MaxHP);
+	}
 
 	if (CurHP <= 0) 
 	{

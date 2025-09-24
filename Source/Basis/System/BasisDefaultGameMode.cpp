@@ -33,3 +33,8 @@ void ABasisDefaultGameMode::SetPlayerHP(float HP)
 	Cast<UMainHUD>(MainHUD)->SetHp(PlayerHP);
 }
 
+void ABasisDefaultGameMode::SetWeaponAmmo(int32 CurAmmo, int32 MaxAmmo)
+{
+	Cast<UMainHUD>(MainHUD)->SetWeaponAmmo(CurAmmo, MaxAmmo);
+}
+

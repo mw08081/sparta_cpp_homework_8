@@ -19,6 +19,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private:
+	UPROPERTY(EditDefaultsOnly)
+	class UMaterialInterface* BulletDecalMaterial;
+
+	FVector DecalSize = FVector(0.03f, 0.03f, 0.03f);
+
 public:	
 
 	UFUNCTION()

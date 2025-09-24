@@ -27,3 +27,11 @@ void UMainHUD::SetStageLv(int32 Value)
 		Txt_StageLv->SetText(FText::FromString(FString::Printf(TEXT("Stage Level: %d"), Value)));
 	}
 }
+
+void UMainHUD::SetWeaponAmmo(int32 CurAmmo, int32 MaxAmmo)
+{
+	if (Txt_CurAmmo != nullptr && Txt_MaxAmmo != nullptr) {
+		Txt_CurAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), CurAmmo)));
+		Txt_MaxAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), MaxAmmo)));
+	}
+}

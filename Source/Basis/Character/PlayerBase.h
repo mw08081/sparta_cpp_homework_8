@@ -39,16 +39,23 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	class UInputAction* LookAction;
 	UPROPERTY(EditDefaultsOnly)
+	class UInputAction* ZoomAction;
+	UPROPERTY(EditDefaultsOnly)
 	class UInputAction* FireAction;
 	UPROPERTY(EditDefaultsOnly)
-	class UInputAction* ZoomAction;
+	class UInputAction* ReloadAction;
 
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
 	void Zoom(const struct FInputActionValue& Value);
 
-
 	void EnterFire(const struct FInputActionValue& Value);
 	void ExitFire(const struct FInputActionValue& Value);
+	void ExitFire();
 	FTimerHandle FireHandle;
+
+	UPROPERTY(EditDefaultsOnly)
+	class UAnimMontage* AMM_Reload;
+	void Reload(const struct FInputActionValue& Value);
+
 };

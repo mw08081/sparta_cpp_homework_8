@@ -32,11 +32,30 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABulletBase> BulletClass;
 
-public:	
-	virtual void Fire();
-	
-	UPROPERTY(EditAnywhere)
-	int32 WeaponRpm = 500;
+private:
+	class ABasisDefaultGameMode* GameMode;
 
+private:
+	void ExecReload();
+
+public:	
+	virtual bool Fire();
+	virtual void Reload();
+	
+	float GetFireInterval() const;
+
+private:
+	UPROPERTY(EditDefaultsOnly)
+	int32 MaxAmmoCapacity = 30;
+	int32 CurAmmo;
+
+	UPROPERTY(EditDefaultsOnly)
+	float ReloadDelay = 0.3f;
+	FTimerHandle ReloadHandle;
+
+public:
+	UPROPERTY(EditDefaultsOnly)
+	int32 WeaponRpm = 500;
+	float FireInterval = 0.1f;
 
 };

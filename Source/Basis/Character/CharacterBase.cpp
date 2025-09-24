@@ -28,8 +28,20 @@ void ACharacterBase::BeginPlay()
 	CurHP = MaxHP;
 }
 
+bool ACharacterBase::GetCanAttack() const
+{
+	return this->bCanAttack;
+}
+
+void ACharacterBase::SetCanAttack(bool _bCanAttack)
+{
+	this->bCanAttack = _bCanAttack;
+}
+
 void ACharacterBase::Attack()
 {
+	if (bCanAttack == false) return;
+
 	//UE_LOG(LogTemp, Display, TEXT("Character Base Attack"));
 	if (Weapon != nullptr)
 	{

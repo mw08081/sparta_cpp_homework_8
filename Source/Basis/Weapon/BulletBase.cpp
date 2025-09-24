@@ -5,6 +5,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Engine/DecalActor.h"
 
 #include "Character/CharacterBase.h"
 
@@ -24,8 +25,8 @@ ABulletBase::ABulletBase()
 	StaticMeshComponent->SetNotifyRigidBodyCollision(true);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
-	ProjectileMovementComponent->InitialSpeed = 5000.0f;
-	ProjectileMovementComponent->MaxSpeed = 5000.0f;
+	ProjectileMovementComponent->InitialSpeed = 10000.0f;
+	ProjectileMovementComponent->MaxSpeed = 10000.0f;
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +50,19 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	if (IsValid(Target)) {
 		Target->Hit(WeaponOwner->Strength, WeaponOwner);
 	}
+
+	FRotator DecalRotation = Hit.ImpactNormal.Rotation();
+	DecalRotation.Roll = FMath::FRand() * 360.f; // 무작위 회전으로 다양함 추가
+
+	// 데칼 스폰
+	UGameplayStatics::SpawnDecalAtLocation(
+		GetWorld(),
+		BulletDecalMaterial,
+		DecalSize,
+		Hit.ImpactPoint,
+		DecalRotation,
+		10.f
+	);
 
 	Destroy();
 }

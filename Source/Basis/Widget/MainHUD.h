@@ -24,6 +24,12 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* Txt_StageLv;
 
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* Txt_CurAmmo;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* Txt_MaxAmmo;
+
 	UFUNCTION()
 	void SetHp(float Value);
 
@@ -32,4 +38,8 @@ public:
 
 	UFUNCTION()
 	void SetStageLv(int32 Value);
+
+	UFUNCTION()
+	void SetWeaponAmmo(int32 CurAmmo, int32 MaxAmmo);
+		
 };

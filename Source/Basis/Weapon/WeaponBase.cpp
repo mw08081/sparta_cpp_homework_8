@@ -8,7 +8,10 @@
 #include "Weapon/BulletBase.h"
 #include "Character/CharacterBase.h"
 #include "Character/PlayerBase.h"
+#include "System/BasisDefaultGameMode.h"
+
 #include <AI/AIControllerBase.h>
+#include <Kismet/GameplayStatics.h>
 
 // Sets default values
 AWeaponBase::AWeaponBase()
@@ -28,14 +31,23 @@ void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	this->FireInterval = 60.0f / WeaponRpm;
+	this->CurAmmo = MaxAmmoCapacity;
 
+	GameMode = Cast<ABasisDefaultGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 }
 
-void AWeaponBase::Fire()
+
+bool AWeaponBase::Fire()
 {
+	if (CurAmmo < 1) return false;
+
 	UAnimInstance* AnimInstance = Mesh->GetAnimInstance();
 	if (IsValid(AnimInstance) && IsValid(FireAnimMontage)) {
 		AnimInstance->Montage_Play(FireAnimMontage);
+	}
+	else {
+		return false;
 	}
 
 	if (IsValid(BulletClass)) {
@@ -48,10 +60,10 @@ void AWeaponBase::Fire()
 		// APlayerBase로 캐스팅 하면 안되나? Enemy가 총을 쏠 수 있잖아..
 		// PlayerController->GetViewportSize(x, y); 이래.. 그럼 이것도 오버라이딩해서 에너미랑 플레이어로 구분하는게 좋을듯.. 
 		ACharacterBase* WeaponOwner = Cast<APlayerBase>(GetOwner());
-		if (!IsValid(WeaponOwner)) return;
+		if (!IsValid(WeaponOwner)) return false;
 
 		AController* WeaponOwnerController = WeaponOwner->GetController();
-		if (!IsValid(WeaponOwner)) return;
+		if (!IsValid(WeaponOwner)) return false;
 
 
 		if (APlayerController* PlayerController = Cast<APlayerController>(WeaponOwnerController))
@@ -70,6 +82,11 @@ void AWeaponBase::Fire()
 			SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, WorldCenter);
 
 			GetWorld()->SpawnActor<ABulletBase>(BulletClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+			CurAmmo--;
+
+			if (GameMode == nullptr) return false;
+			GameMode->SetWeaponAmmo(CurAmmo, MaxAmmoCapacity);
 		} 
 		else if (AAIControllerBase* AIController = Cast<AAIControllerBase>(WeaponOwnerController))
 		{
@@ -78,7 +95,29 @@ void AWeaponBase::Fire()
 			SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, TargetPawn->GetActorLocation());
 			GetWorld()->SpawnActor<ABulletBase>(BulletClass, SpawnLocation, SpawnRotation, SpawnParams);
 		}
+
 	}
+	else {
+		return false;
+	}
+
+	return true;
+}
+
+void AWeaponBase::Reload()
+{
+	GetWorld()->GetTimerManager().SetTimer(ReloadHandle, this, &AWeaponBase::ExecReload, ReloadDelay, false);
+}
+
+void AWeaponBase::ExecReload()
+{
+	this->CurAmmo = this->MaxAmmoCapacity;
+	GameMode->SetWeaponAmmo(CurAmmo, MaxAmmoCapacity);
+}
+
+float AWeaponBase::GetFireInterval() const
+{
+	return this->FireInterval;
 }
 
 

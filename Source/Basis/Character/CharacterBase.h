@@ -27,7 +27,7 @@ public:
 	int32 MaxHP = 100;
 
 	UPROPERTY(EditAnywhere)
-	int32 Strength = 10;
+	int32 Strength = 30;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	int32 AttackCount = 0;
@@ -43,7 +43,13 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = "weapon")
 	class AWeaponBase* Weapon;
 
+protected:
+	bool bCanAttack = true;
+
 public:
+	bool GetCanAttack() const;
+	void SetCanAttack(bool _bCanAttack);
+
 	virtual void Attack();
 
 	UFUNCTION(BlueprintCallable)
