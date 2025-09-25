@@ -28,10 +28,16 @@ void UMainHUD::SetStageLv(int32 Value)
 	}
 }
 
-void UMainHUD::SetWeaponAmmo(int32 CurAmmo, int32 MaxAmmo)
+void UMainHUD::SetWeaponAmmo(int32 WeaponAmmo)
 {
-	if (Txt_CurAmmo != nullptr && Txt_MaxAmmo != nullptr) {
-		Txt_CurAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), CurAmmo)));
-		Txt_MaxAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), MaxAmmo)));
+	if (Txt_WeaponAmmo != nullptr) {
+		Txt_WeaponAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), WeaponAmmo)));
+	}
+}
+
+void UMainHUD::SetPlayerAmmo(int32 PlayerAmmo)
+{
+	if (Txt_PlayerAmmo != nullptr) {
+		Txt_PlayerAmmo->SetText(FText::FromString(FString::Printf(TEXT("%d"), PlayerAmmo)));
 	}
 }

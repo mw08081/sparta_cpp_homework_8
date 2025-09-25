@@ -36,11 +36,15 @@ private:
 	class ABasisDefaultGameMode* GameMode;
 
 private:
-	void ExecReload();
+	UFUNCTION()
+	void ExecReload(int32 AmmoCount);
 
 public:	
+	int32 GetMaxAmmoCapacity() const;
+	int32 GetCurAmmo() const;
+
 	virtual bool Fire();
-	virtual void Reload();
+	virtual void Reload(int32 AmmoCount);
 	
 	float GetFireInterval() const;
 

@@ -36,6 +36,6 @@ public:
 	// for umg
 	void SetPlayerKillCount(int32 Killcount);
 	void SetPlayerHP(float HP);
-	void SetWeaponAmmo(int32 CurAmmo, int32 MaxAmmo);
-	
+	void SetWeaponAmmo(int32 WeaponAmmo);
+	void SetPlayerAmmo(int32 PlayerAmmo);
 };

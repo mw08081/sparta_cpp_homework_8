@@ -33,6 +33,7 @@ public:
 	int32 AttackCount = 0;
 
 protected:
+	int32 AmmoCount = 42;
 	int32 CurHP = 0;
 	int32 KillCount = 0;
 
@@ -57,5 +58,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void IncreaseKillCount();
+
+	int32 GetAmmoCount() const;
+	void SetAmmoCount(int32 AmmoCount);
 
 };

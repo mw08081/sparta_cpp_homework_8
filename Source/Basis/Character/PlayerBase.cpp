@@ -136,9 +136,11 @@ void APlayerBase::ExitFire()
 
 void APlayerBase::Reload(const FInputActionValue& Value)
 {
+	// 무기가 없으면 reload 불가
 	if (Weapon == nullptr) return;
 
-	//Weapon->Reload();
+	// 보유 탄약수가 없으면 reload 불가
+	if (AmmoCount < 1) return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance == nullptr) return;

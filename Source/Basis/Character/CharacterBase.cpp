@@ -59,6 +59,19 @@ void ACharacterBase::Hit(int32 Damage, AActor* ByWho)
 
 void ACharacterBase::IncreaseKillCount()
 {
-	UE_LOG(LogTemp, Display, TEXT("Character Base IncreaseKillCount"));
+	//UE_LOG(LogTemp, Display, TEXT("Character Base IncreaseKillCount"));
+}
+
+int32 ACharacterBase::GetAmmoCount() const
+{
+	return this->AmmoCount;
+}
+
+void ACharacterBase::SetAmmoCount(int32 _AmmoCount)
+{
+	this->AmmoCount = _AmmoCount;
+	
+	// 보유량 HUD 표시
+	CurGameMode->SetPlayerAmmo(AmmoCount);
 }
 

@@ -19,7 +19,13 @@ void UAN_ReloadComplete::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceB
 
         Player->SetCanAttack(true);
         
-        if (Player->Weapon == nullptr) return;
-        Player->Weapon->Reload();
+        AWeaponBase* OwnerWeapon = Player->Weapon;
+        if (OwnerWeapon == nullptr) return;
+        int32 PlayerAmmoCount = Player->GetAmmoCount();
+        int32 ReloadAmount = FMath::Min(PlayerAmmoCount, OwnerWeapon->GetMaxAmmoCapacity() - OwnerWeapon->GetCurAmmo());
+        
+        // call reload
+        Player->Weapon->Reload(ReloadAmount);
+        Player->SetAmmoCount(PlayerAmmoCount - ReloadAmount);
     }
 }

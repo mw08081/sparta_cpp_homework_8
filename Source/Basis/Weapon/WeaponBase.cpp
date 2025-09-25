@@ -38,6 +38,16 @@ void AWeaponBase::BeginPlay()
 }
 
 
+int32 AWeaponBase::GetMaxAmmoCapacity() const
+{
+	return this->MaxAmmoCapacity;
+}
+
+int32 AWeaponBase::GetCurAmmo() const
+{
+	return this->CurAmmo;
+}
+
 bool AWeaponBase::Fire()
 {
 	if (CurAmmo < 1) return false;
@@ -86,7 +96,7 @@ bool AWeaponBase::Fire()
 			CurAmmo--;
 
 			if (GameMode == nullptr) return false;
-			GameMode->SetWeaponAmmo(CurAmmo, MaxAmmoCapacity);
+			GameMode->SetWeaponAmmo(CurAmmo);
 		} 
 		else if (AAIControllerBase* AIController = Cast<AAIControllerBase>(WeaponOwnerController))
 		{
@@ -104,15 +114,26 @@ bool AWeaponBase::Fire()
 	return true;
 }
 
-void AWeaponBase::Reload()
+
+void AWeaponBase::Reload(int32 AmmoCount)
 {
-	GetWorld()->GetTimerManager().SetTimer(ReloadHandle, this, &AWeaponBase::ExecReload, ReloadDelay, false);
+
+	this->CurAmmo += AmmoCount;
+	GameMode->SetWeaponAmmo(CurAmmo);
+
+	//FTimerDelegate TimerDel;
+	//TimerDel.BindUFunction(this, FName("ExecReload"), AmmoCount);
+
+	//GetWorld()->GetTimerManager().SetTimer(
+	//	ReloadHandle,
+	//	TimerDel,
+	//	ReloadDelay,
+	//	false
+	//);
 }
 
-void AWeaponBase::ExecReload()
+void AWeaponBase::ExecReload(int32 AmmoCount)
 {
-	this->CurAmmo = this->MaxAmmoCapacity;
-	GameMode->SetWeaponAmmo(CurAmmo, MaxAmmoCapacity);
 }
 
 float AWeaponBase::GetFireInterval() const
