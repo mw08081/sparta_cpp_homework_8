@@ -3,6 +3,8 @@
 
 #include "Prop/Item/ItemBase.h"
 
+#include "Character/CharacterBase.h"
+
 // Sets default values
 AItemBase::AItemBase()
 {
@@ -30,6 +32,10 @@ void AItemBase::Tick(float DeltaTime)
 
 void AItemBase::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	ACharacterBase* Player = Cast<ACharacterBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	ACharacterBase* Overlap = Cast<ACharacterBase>(OtherActor);
+	if (Player != Overlap) return;
+	
 	OnItemTaken(OtherActor);
 }
 
