@@ -1,18 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Prop/Item/ItemAmmo.h"
+#include "Prop/Item/ItemRecovery.h"
 
 #include "Character/PlayerBase.h"
-#include "Weapon/WeaponBase.h"
 
-void AItemAmmo::OnItemTaken(AActor* TakerActor)
+void AItemRecovery::OnItemTaken(AActor* TakerActor)
 {
 	Super::OnItemTaken(TakerActor);
 
 	APlayerBase* TakerCharacter = Cast<APlayerBase>(TakerActor);
 	if (TakerCharacter == nullptr) return;
 
-	int32 CharacterAmmoCount = TakerCharacter->GetAmmoCount();
-	TakerCharacter->SetAmmoCount(CharacterAmmoCount + AmmoCount);
+	int32 PlayerHP = TakerCharacter->GetCurHP();
+
+	TakerCharacter->SetCurHP(FMath::Min(PlayerHP + RecoveryAmount, MaxRecoveryAmount));
 }

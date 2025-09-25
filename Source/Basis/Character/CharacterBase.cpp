@@ -75,3 +75,15 @@ void ACharacterBase::SetAmmoCount(int32 _AmmoCount)
 	CurGameMode->SetPlayerAmmo(AmmoCount);
 }
 
+int32 ACharacterBase::GetCurHP() const
+{
+	return CurHP;
+}
+
+void ACharacterBase::SetCurHP(int32 _HP)
+{
+	this->CurHP = _HP;
+
+	CurGameMode->SetPlayerHP((float)CurHP / MaxHP);
+}
+

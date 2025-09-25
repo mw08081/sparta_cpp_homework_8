@@ -4,19 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "Prop/Item/ItemBase.h"
-#include "ItemAmmo.generated.h"
+#include "ItemRecovery.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class BASIS_API AItemAmmo : public AItemBase
+class BASIS_API AItemRecovery : public AItemBase
 {
 	GENERATED_BODY()
-	
+
+
 private:
 	UPROPERTY(EditAnywhere)
-	int32 AmmoCount;
+	int32 RecoveryAmount;
+
+	UPROPERTY(EditAnywhere)
+	int32 MaxRecoveryAmount;
 
 protected:
 	virtual void OnItemTaken(AActor* TakerActor) override;

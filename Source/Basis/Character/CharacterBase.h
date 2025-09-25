@@ -50,6 +50,12 @@ protected:
 public:
 	bool GetCanAttack() const;
 	void SetCanAttack(bool _bCanAttack);
+	
+	int32 GetAmmoCount() const;
+	void SetAmmoCount(int32 AmmoCount);
+
+	int32 GetCurHP() const;
+	void SetCurHP(int32 _HP);
 
 	virtual void Attack();
 
@@ -58,8 +64,5 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	virtual void IncreaseKillCount();
-
-	int32 GetAmmoCount() const;
-	void SetAmmoCount(int32 AmmoCount);
 
 };
