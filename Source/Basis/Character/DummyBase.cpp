@@ -5,6 +5,8 @@
 
 #include "Components/SkeletalMeshComponent.h"
 
+#include "Character/CharacterBase.h"
+
 void ADummyBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -75,5 +77,6 @@ void ADummyBase::Hit(int32 Damage, AActor* ByWho)
 
 	if (CurHP < 0) {
 		ExecRot();
+		static_cast<ACharacterBase*>(ByWho)->IncreaseKillCount();
 	}
 }

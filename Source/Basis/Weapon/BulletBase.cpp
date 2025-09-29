@@ -52,14 +52,17 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 
 		if (Hit.BoneName.ToString().StartsWith("Head")) {
 			Damage *= 1.2f;
+			DrawDebugSphere(GetWorld(), Hit.Location, 1.5f, 24, FColor::Red, false, 3);
 		}
 		else if (Hit.BoneName.ToString().StartsWith("Spine")) {
 			Damage *= 0.7f;
+			DrawDebugSphere(GetWorld(), Hit.Location, 1.5f, 24, FColor::Yellow, false, 3);
 		}
 		else {
 			Damage *= 0.4f;
+			//DrawDebugSphere(GetWorld(), Hit.Location, 1.f, 24, FColor::Blue, false, 3);
 		}
-		DrawDebugSphere(GetWorld(), Hit.Location, 1.5f, 24, FColor::Red, false, 3);
+		
 		UE_LOG(LogTemp, Display, TEXT("%s hit: %s (%d) -> %d/%d"), *OtherActor->GetActorNameOrLabel(), *Hit.BoneName.ToString(), (int)Damage, Target->GetCurHP() - (int)Damage, Target->MaxHP);
 		Target->Hit((int)Damage, WeaponOwner);
 	}

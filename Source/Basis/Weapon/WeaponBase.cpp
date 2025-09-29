@@ -117,23 +117,8 @@ bool AWeaponBase::Fire()
 
 void AWeaponBase::Reload(int32 AmmoCount)
 {
-
 	this->CurAmmo += AmmoCount;
 	GameMode->SetWeaponAmmo(CurAmmo);
-
-	//FTimerDelegate TimerDel;
-	//TimerDel.BindUFunction(this, FName("ExecReload"), AmmoCount);
-
-	//GetWorld()->GetTimerManager().SetTimer(
-	//	ReloadHandle,
-	//	TimerDel,
-	//	ReloadDelay,
-	//	false
-	//);
-}
-
-void AWeaponBase::ExecReload(int32 AmmoCount)
-{
 }
 
 float AWeaponBase::GetFireInterval() const

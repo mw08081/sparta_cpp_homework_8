@@ -13,6 +13,7 @@ void AItemRecovery::OnItemTaken(AActor* TakerActor)
 	if (TakerCharacter == nullptr) return;
 
 	int32 PlayerHP = TakerCharacter->GetCurHP();
+	if (PlayerHP >= MaxRecoveryAmount && RecoveryAmount > 0) return;
 
 	TakerCharacter->SetCurHP(FMath::Min(PlayerHP + RecoveryAmount, MaxRecoveryAmount));
 }

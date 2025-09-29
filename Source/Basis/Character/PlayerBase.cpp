@@ -139,6 +139,9 @@ void APlayerBase::Reload(const FInputActionValue& Value)
 	// 무기가 없으면 reload 불가
 	if (Weapon == nullptr) return;
 
+	// 장탄수 최대일 경우 reload 불가
+	if (Weapon->GetMaxAmmoCapacity() == Weapon->GetCurAmmo()) return;
+
 	// 보유 탄약수가 없으면 reload 불가
 	if (AmmoCount < 1) return;
 
