@@ -58,11 +58,7 @@ public:
 	void SetCurHP(int32 _HP);
 
 	virtual void Attack();
-
-	UFUNCTION(BlueprintCallable)
 	virtual void Hit(int32 Damage, AActor* ByWho);
-
-	UFUNCTION(BlueprintCallable)
 	virtual void IncreaseKillCount();
 
 };

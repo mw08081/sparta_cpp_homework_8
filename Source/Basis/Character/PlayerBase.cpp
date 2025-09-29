@@ -38,8 +38,8 @@ void APlayerBase::BeginPlay()
 		}
 	}
 
-	CameraBoom->TargetArmLength = 120;
-	CameraBoom->SocketOffset = FVector(0, 60, 60);
+	CameraBoom->TargetArmLength = 100;
+	CameraBoom->SocketOffset = FVector(4, 30, 80);
 
 	Weapon = GetWorld()->SpawnActor<AWeaponBase>(WeaponClass);
 	if (IsValid(Weapon))
@@ -103,13 +103,13 @@ void APlayerBase::Zoom(const FInputActionValue& Value)
 
 	if (OnMouseButtonDown)
 	{
-		CameraBoom->TargetArmLength = 40;
-		CameraBoom->SocketOffset = FVector(0, 40, 60);
+		CameraBoom->TargetArmLength = 35;
+		CameraBoom->SocketOffset = FVector(4, 30, 80);
 	}
 	else
-	{
-		CameraBoom->TargetArmLength = 120;
-		CameraBoom->SocketOffset = FVector(0, 60, 60);
+	{ 
+		CameraBoom->TargetArmLength = 100;
+		CameraBoom->SocketOffset = FVector(4, 30, 80);
 	}
 }
 
