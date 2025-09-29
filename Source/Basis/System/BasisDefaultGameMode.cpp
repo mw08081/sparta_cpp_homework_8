@@ -4,7 +4,9 @@
 #include "System/BasisDefaultGameMode.h"
 
 #include "Blueprint/UserWidget.h"
+#include "NavigationSystem.h"
 
+#include "Character/CharacterBase.h"
 #include "Widget/MainHUD.h"
 
 void ABasisDefaultGameMode::BeginPlay()
@@ -41,5 +43,22 @@ void ABasisDefaultGameMode::SetWeaponAmmo(int32 CurAmmo)
 void ABasisDefaultGameMode::SetPlayerAmmo(int32 PlayerAmmo)
 {
 	Cast<UMainHUD>(MainHUD)->SetPlayerAmmo(PlayerAmmo);
+}
+
+void ABasisDefaultGameMode::StartGame()
+{
+	UE_LOG(LogTemp, Display, TEXT("StartGame"));
+	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+	if (NavSystem == nullptr) return;
+
+
+	int32 EmemyCnt = EmemyCntList[StageLv];
+	UE_LOG(LogTemp, Display, TEXT("Generate ememy %d"), EmemyCnt);
+	for (int32 i = 0; i < EmemyCnt; i++) {
+		FNavLocation LOC;
+		NavSystem->GetRandomPoint(LOC);
+
+		GetWorld()->SpawnActor<ACharacterBase>(EmemyClass, LOC.Location, FRotator::ZeroRotator);
+	}
 }
 

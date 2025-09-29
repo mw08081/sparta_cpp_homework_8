@@ -172,29 +172,14 @@ void APlayerBase::Hit(int32 Damage, AActor* ByWho)
 {
 	Super::Hit(Damage, ByWho);
 
-	if (CurHP <= 0) 
-	{
-		CurHP = 0;
-	}
-
-	if (!GetController()->IsA(AAIController::StaticClass()))
-	{
-		CurGameMode->SetPlayerHP((float)CurHP / MaxHP);
-	}
-
+	CurGameMode->SetPlayerHP((float)CurHP / MaxHP);
+	
 	if (CurHP <= 0) 
 	{
 		Destroy();
 		if (IsValid(Weapon))
 		{
 			Weapon->Destroy();
-		}
-
-		// temp.. no need to calc enemy's kill count
-		APlayerBase* Killer = Cast<APlayerBase>(ByWho);
-		if (IsValid(Killer))
-		{
-			Killer->IncreaseKillCount();
 		}
 	}
 }
@@ -203,7 +188,6 @@ void APlayerBase::IncreaseKillCount()
 {
 	Super::IncreaseKillCount();
 
-	KillCount += 1;
 	CurGameMode->SetPlayerKillCount(KillCount);
 }
 

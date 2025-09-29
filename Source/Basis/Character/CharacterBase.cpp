@@ -42,7 +42,7 @@ void ACharacterBase::Attack()
 {
 	if (bCanAttack == false) return;
 
-	//UE_LOG(LogTemp, Display, TEXT("Character Base Attack"));
+	UE_LOG(LogTemp, Display, TEXT("Character Base Attack"));
 	if (Weapon != nullptr)
 	{
 		Weapon->Fire();
@@ -54,12 +54,18 @@ void ACharacterBase::Hit(int32 Damage, AActor* ByWho)
 	//UE_LOG(LogTemp, Display, TEXT("Character Base OnHit"));
 
 	CurHP -= Damage;
+
+	if (CurHP <= 0) {
+		static_cast<ACharacterBase*>(ByWho)->IncreaseKillCount();
+	}
 }
 
 
 void ACharacterBase::IncreaseKillCount()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Character Base IncreaseKillCount"));
+
+	KillCount++;
 }
 
 int32 ACharacterBase::GetAmmoCount() const

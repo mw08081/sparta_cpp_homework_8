@@ -19,11 +19,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class UUserWidget> MainHUD_class;
-
-	UPROPERTY(VisibleAnywhere)
 	class UUserWidget* MainHUD;
 
-	int32 StageLv;
+	int32 StageLv = 0;
 
 	/// <summary>
 	/// Player Information
@@ -38,4 +36,12 @@ public:
 	void SetPlayerHP(float HP);
 	void SetWeaponAmmo(int32 WeaponAmmo);
 	void SetPlayerAmmo(int32 PlayerAmmo);
+
+public:
+	TArray<int32> EmemyCntList = { 5, 7, 10 };
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class ACharacterBase> EmemyClass;
+
+	UFUNCTION(BlueprintCallable)
+	void StartGame();
 };

@@ -7,6 +7,8 @@
 #include "GameFramework/Pawn.h"
 #include "AIController.h"
 
+#include "Character/AIBase.h"
+#include "Character/PlayerBase.h"
 #include "Character/CharacterBase.h"
 
 UBTT_Attack::UBTT_Attack()
@@ -24,20 +26,20 @@ EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent& BTC, uint8*
 	if (AIController == nullptr) return EBTNodeResult::Failed;
 
 	//ACharacterBase* AIPawn = Cast<ACharacterBase>(BTC.GetOwner()); // 도 가능
-	ACharacterBase* AIPawn = Cast<ACharacterBase>(AIController->GetPawn());
-	if(AIPawn == nullptr) return EBTNodeResult::Failed;
+	AAIBase* AICharacter = static_cast<AAIBase*>(AIController->GetPawn());
+	if(AICharacter == nullptr) return EBTNodeResult::Failed;
 
 	// Target Player 검증
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (PlayerController == nullptr) return EBTNodeResult::Failed;
 
-	ACharacterBase* TargetPawn = Cast<ACharacterBase>(PlayerController->GetPawn());
+	APlayerBase* TargetPawn = static_cast<APlayerBase*>(PlayerController->GetPawn());
 	if (TargetPawn == nullptr) return EBTNodeResult::Failed;
 	 
 	// 공격위치 설정
 	AIController->StopMovement();
 
-	AIPawn->Attack();
+	AICharacter->Attack();
 
 	return EBTNodeResult::Succeeded;
 }

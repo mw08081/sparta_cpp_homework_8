@@ -69,7 +69,7 @@ bool AWeaponBase::Fire()
 
 		// APlayerBase로 캐스팅 하면 안되나? Enemy가 총을 쏠 수 있잖아..
 		// PlayerController->GetViewportSize(x, y); 이래.. 그럼 이것도 오버라이딩해서 에너미랑 플레이어로 구분하는게 좋을듯.. 
-		ACharacterBase* WeaponOwner = Cast<APlayerBase>(GetOwner());
+		ACharacterBase* WeaponOwner = Cast<ACharacterBase>(GetOwner());
 		if (!IsValid(WeaponOwner)) return false;
 
 		AController* WeaponOwnerController = WeaponOwner->GetController();
