@@ -5,60 +5,119 @@
 
 #include "Blueprint/UserWidget.h"
 #include "NavigationSystem.h"
+#include "TimerManager.h"
 
 #include "Character/CharacterBase.h"
 #include "Widget/MainHUD.h"
+#include "Widget/StartGameWidget.h"
+#include "Widget/EndGameWidget.h"
 
 void ABasisDefaultGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsValid(MainHUD_class)) {
-		MainHUD = CreateWidget<UUserWidget>(GetWorld(), MainHUD_class);
-
+	if (IsValid(StartGameWidget_class)) {
+		StartGameWidget = CreateWidget<UStartGameWidget>(GetWorld(), StartGameWidget_class);
 	}
 
-	if (IsValid(MainHUD)) {
-		MainHUD->AddToViewport();
+	if (IsValid(StartGameWidget)) {
+		StartGameWidget->AddToViewport();
 	}
 }
 
 void ABasisDefaultGameMode::SetPlayerKillCount(int32 KillCount)
 {
-	PlayerKillCount = KillCount;
-	Cast<UMainHUD>(MainHUD)->SetKillCount(PlayerKillCount);
+	if (MainHUD == nullptr) return;
+	MainHUD->SetKillCount(KillCount);
 }
 
 void ABasisDefaultGameMode::SetPlayerHP(float HP)
 {
-	PlayerHP = HP;
-	Cast<UMainHUD>(MainHUD)->SetHp(PlayerHP);
+	if (MainHUD == nullptr) return;
+	MainHUD->SetHp(HP);
 }
 
 void ABasisDefaultGameMode::SetWeaponAmmo(int32 CurAmmo)
 {
-	Cast<UMainHUD>(MainHUD)->SetWeaponAmmo(CurAmmo);
+	if (MainHUD == nullptr) return;
+	MainHUD->SetWeaponAmmo(CurAmmo);
 }
 
 void ABasisDefaultGameMode::SetPlayerAmmo(int32 PlayerAmmo)
 {
-	Cast<UMainHUD>(MainHUD)->SetPlayerAmmo(PlayerAmmo);
+	if (MainHUD == nullptr) return;
+	MainHUD->SetPlayerAmmo(PlayerAmmo);
+}
+
+void ABasisDefaultGameMode::EndStageTime()
+{
+	UE_LOG(LogTemp, Display, TEXT("End Stage Time"));
+}
+
+void ABasisDefaultGameMode::UpdateStageTime()
+{
+	FTimerManager& WorldTimerManager = GetWorld()->GetTimerManager();
+	int32 CurElapsedTime = static_cast<int32>(WorldTimerManager.GetTimerElapsed(StageTimeManageHandle));
+
+	MainHUD->SetStageTime(StageLimitTime - CurElapsedTime);
+}
+
+void ABasisDefaultGameMode::CreateMainHUD()
+{
+	if (IsValid(MainHUD_class)) {
+		MainHUD = CreateWidget<UMainHUD>(GetWorld(), MainHUD_class);
+	}
+
+	if (IsValid(MainHUD)) {
+		MainHUD->AddToViewport();
+	}
+	
+	StartGame();
 }
 
 void ABasisDefaultGameMode::StartGame()
 {
-	UE_LOG(LogTemp, Display, TEXT("StartGame"));
 	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 	if (NavSystem == nullptr) return;
 
+	CurKilledEnemyCnt = 0;
 
-	int32 EmemyCnt = EmemyCntList[StageLv];
-	UE_LOG(LogTemp, Display, TEXT("Generate ememy %d"), EmemyCnt);
-	for (int32 i = 0; i < EmemyCnt; i++) {
+	int32 EnemyCnt = EnemyCntList[StageLv];
+	for (int32 i = 0; i < EnemyCnt; i++) {
 		FNavLocation LOC;
 		NavSystem->GetRandomPoint(LOC);
 
 		GetWorld()->SpawnActor<ACharacterBase>(EmemyClass, LOC.Location, FRotator::ZeroRotator);
+	}
+
+	GetWorld()->GetTimerManager().SetTimer(StageTimeManageHandle, this, &ABasisDefaultGameMode::EndStageTime, StageLimitTime, false);
+	GetWorld()->GetTimerManager().SetTimer(StageTimeUpdateHandle, this, &ABasisDefaultGameMode::UpdateStageTime, 1, true);
+	UE_LOG(LogTemp, Display, TEXT("Wave %d Start!!"), StageLv + 1);
+}
+
+void ABasisDefaultGameMode::EndGame()
+{
+	if (EndGameWidget == nullptr) return;
+	EndGameWidget = CreateWidget<UEndGameWidget>(GetWorld(), EndGameWidget_class);
+
+	if (EndGameWidget == nullptr) return;
+	EndGameWidget->AddToViewport();
+}
+
+void ABasisDefaultGameMode::KillEnemy()
+{
+	CurKilledEnemyCnt++;
+
+	if (EnemyCntList[StageLv] == CurKilledEnemyCnt) {
+		if (StageLv >= 2) {
+			UE_LOG(LogTemp, Display, TEXT("Game Clear!!"));
+		}
+		else {
+			UE_LOG(LogTemp, Display, TEXT("Stage END!!"));
+			StageLv++;
+
+			GetWorld()->GetTimerManager().SetTimer(StageStartHandle, this, &ABasisDefaultGameMode::StartGame, 3, false);
+		}
 	}
 }
 

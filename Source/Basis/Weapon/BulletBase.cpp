@@ -63,7 +63,7 @@ void ABulletBase::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 			//DrawDebugSphere(GetWorld(), Hit.Location, 1.f, 24, FColor::Blue, false, 3);
 		}
 		
-		UE_LOG(LogTemp, Display, TEXT("%s hit: %s (%d) -> %d/%d"), *OtherActor->GetActorNameOrLabel(), *Hit.BoneName.ToString(), (int)Damage, Target->GetCurHP() - (int)Damage, Target->MaxHP);
+		//UE_LOG(LogTemp, Display, TEXT("%s hit: %s (%d) -> %d/%d"), *OtherActor->GetActorNameOrLabel(), *Hit.BoneName.ToString(), (int)Damage, Target->GetCurHP() - (int)Damage, Target->MaxHP);
 		Target->Hit((int)Damage, WeaponOwner);
 	}
 

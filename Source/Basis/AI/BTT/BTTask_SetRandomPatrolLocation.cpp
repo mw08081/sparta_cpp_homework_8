@@ -29,11 +29,9 @@ EBTNodeResult::Type UBTTask_SetRandomPatrolLocation::ExecuteTask(UBehaviorTreeCo
 		FNavLocation LOC;
 		NavSystem->GetRandomPoint(LOC);
 
-		DrawDebugSphere(GetWorld(), LOC.Location, 25, 25, FColor::Red, true);
+		//DrawDebugSphere(GetWorld(), LOC.Location, 25, 25, FColor::Red, true);
 		OwnerBlackboard->SetValueAsVector(GetSelectedBlackboardKey(), LOC.Location);
 
 		return EBTNodeResult::Succeeded;
 	}
-
-
 }

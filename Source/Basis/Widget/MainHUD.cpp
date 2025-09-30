@@ -13,6 +13,13 @@ void UMainHUD::SetHp(float Value)
 	}
 }
 
+void UMainHUD::SetStageTime(float Value)
+{
+	if (Txt_StageTime != nullptr) {
+		Txt_StageTime->SetText(FText::FromString(FString::Printf(TEXT("%d"), static_cast<int32>(Value))));
+	}
+}
+
 void UMainHUD::SetKillCount(int32 Value)
 {
 	if (IsValid(Txt_KillCount))

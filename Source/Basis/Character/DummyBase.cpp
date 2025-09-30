@@ -77,6 +77,5 @@ void ADummyBase::Hit(int32 Damage, AActor* ByWho)
 
 	if (CurHP < 0) {
 		ExecRot();
-		static_cast<ACharacterBase*>(ByWho)->IncreaseKillCount();
 	}
 }

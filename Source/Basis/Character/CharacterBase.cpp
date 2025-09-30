@@ -42,7 +42,6 @@ void ACharacterBase::Attack()
 {
 	if (bCanAttack == false) return;
 
-	UE_LOG(LogTemp, Display, TEXT("Character Base Attack"));
 	if (Weapon != nullptr)
 	{
 		Weapon->Fire();
@@ -63,9 +62,10 @@ void ACharacterBase::Hit(int32 Damage, AActor* ByWho)
 
 void ACharacterBase::IncreaseKillCount()
 {
-	//UE_LOG(LogTemp, Display, TEXT("Character Base IncreaseKillCount"));
+	UE_LOG(LogTemp, Display, TEXT("Character Base IncreaseKillCount %d"), KillCount);
 
 	KillCount++;
+	CurGameMode->KillEnemy();
 }
 
 int32 ACharacterBase::GetAmmoCount() const

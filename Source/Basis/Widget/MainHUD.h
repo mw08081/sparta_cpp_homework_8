@@ -15,8 +15,12 @@ class BASIS_API UMainHUD : public UUserWidget
 	GENERATED_BODY()
 
 public:
+
 	UPROPERTY(meta = (BindWidget))
 	class UProgressBar* PB_HPGauge;
+
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* Txt_StageTime;
 
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* Txt_KillCount;
@@ -32,6 +36,9 @@ public:
 
 	UFUNCTION()
 	void SetHp(float Value);
+
+	UFUNCTION()
+	void SetStageTime(float Value);
 
 	UFUNCTION()
 	void SetKillCount(int32 Value);

@@ -31,7 +31,6 @@ void AAIBase::Hit(int32 Damage, AActor* ByWho)
 	Super::Hit(Damage, ByWho);
 
 	if (CurHP < 0) {
-
 		if (IsValid(Weapon))
 		{
 			Weapon->Destroy();
@@ -42,4 +41,5 @@ void AAIBase::Hit(int32 Damage, AActor* ByWho)
 
 void AAIBase::IncreaseKillCount()
 {
+	Super::IncreaseKillCount();
 }
