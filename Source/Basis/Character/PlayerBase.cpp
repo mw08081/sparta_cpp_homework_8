@@ -181,6 +181,7 @@ void APlayerBase::Hit(int32 Damage, AActor* ByWho)
 		{
 			Weapon->Destroy();
 		}
+		CurGameMode->EndGame(false);
 	}
 }
 

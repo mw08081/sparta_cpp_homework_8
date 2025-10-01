@@ -22,5 +22,5 @@ void UStartGameWidget::OnClickStartGame()
 	ABasisDefaultGameMode* GameMode = static_cast<ABasisDefaultGameMode*>(UGameplayStatics::GetGameMode(GetWorld()));
 	
 	if (GameMode == nullptr) return;
-	GameMode->CreateMainHUD();
+	GameMode->ReadyGame();
 }

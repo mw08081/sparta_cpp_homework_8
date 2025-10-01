@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "NavigationSystem.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Character/CharacterBase.h"
 #include "Widget/MainHUD.h"
@@ -16,13 +17,17 @@ void ABasisDefaultGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsValid(StartGameWidget_class)) {
-		StartGameWidget = CreateWidget<UStartGameWidget>(GetWorld(), StartGameWidget_class);
-	}
+	PlayerController = GetWorld()->GetFirstPlayerController();
+	
+	if (PlayerController == nullptr) return;
+	PlayerController->bShowMouseCursor = true;
+	PlayerController->SetInputMode(FInputModeUIOnly());
 
-	if (IsValid(StartGameWidget)) {
-		StartGameWidget->AddToViewport();
-	}
+	if (StartGameWidget_class == nullptr) return;
+	StartGameWidget = CreateWidget<UStartGameWidget>(GetWorld(), StartGameWidget_class);
+	
+	if (StartGameWidget == nullptr) return;
+	StartGameWidget->AddToViewport();	
 }
 
 void ABasisDefaultGameMode::SetPlayerKillCount(int32 KillCount)
@@ -51,7 +56,11 @@ void ABasisDefaultGameMode::SetPlayerAmmo(int32 PlayerAmmo)
 
 void ABasisDefaultGameMode::EndStageTime()
 {
-	UE_LOG(LogTemp, Display, TEXT("End Stage Time"));
+	if (PlayerController == nullptr) return;
+	ACharacterBase* PlayerCharacter = static_cast<ACharacterBase*>(PlayerController->GetCharacter());
+	PlayerCharacter->Hit(100, PlayerCharacter);
+
+	EndGame(false);
 }
 
 void ABasisDefaultGameMode::UpdateStageTime()
@@ -59,19 +68,32 @@ void ABasisDefaultGameMode::UpdateStageTime()
 	FTimerManager& WorldTimerManager = GetWorld()->GetTimerManager();
 	int32 CurElapsedTime = static_cast<int32>(WorldTimerManager.GetTimerElapsed(StageTimeManageHandle));
 
+	if (MainHUD == nullptr) return;
 	MainHUD->SetStageTime(StageLimitTime - CurElapsedTime);
 }
 
-void ABasisDefaultGameMode::CreateMainHUD()
+void ABasisDefaultGameMode::ReadyGame()
 {
-	if (IsValid(MainHUD_class)) {
-		MainHUD = CreateWidget<UMainHUD>(GetWorld(), MainHUD_class);
+	if (StartGameWidget == nullptr) return;
+	if (StartGameWidget->IsInViewport()) {
+		StartGameWidget->RemoveFromParent();
 	}
 
-	if (IsValid(MainHUD)) {
-		MainHUD->AddToViewport();
+	if (EndGameWidget != nullptr && EndGameWidget->IsInViewport()) {
+		EndGameWidget->RemoveFromParent();
 	}
+
+	if (MainHUD_class == nullptr) return;
+	MainHUD = CreateWidget<UMainHUD>(GetWorld(), MainHUD_class);
 	
+	if (MainHUD == nullptr)  return;
+	MainHUD->AddToViewport();
+	
+	if (PlayerController == nullptr) return;
+	PlayerController->bShowMouseCursor = false;
+	PlayerController->SetInputMode(FInputModeGameOnly());
+
+	StageLv = 0;
 	StartGame();
 }
 
@@ -92,15 +114,22 @@ void ABasisDefaultGameMode::StartGame()
 
 	GetWorld()->GetTimerManager().SetTimer(StageTimeManageHandle, this, &ABasisDefaultGameMode::EndStageTime, StageLimitTime, false);
 	GetWorld()->GetTimerManager().SetTimer(StageTimeUpdateHandle, this, &ABasisDefaultGameMode::UpdateStageTime, 1, true);
-	UE_LOG(LogTemp, Display, TEXT("Wave %d Start!!"), StageLv + 1);
+	UE_LOG(LogTemp, Display, TEXT("Wave %d!!"), StageLv + 1);
 }
 
-void ABasisDefaultGameMode::EndGame()
+void ABasisDefaultGameMode::EndGame(bool IsClear)
 {
-	if (EndGameWidget == nullptr) return;
+	GetWorld()->GetTimerManager().ClearTimer(StageTimeUpdateHandle);
+
+	if (PlayerController == nullptr) return;
+	PlayerController->bShowMouseCursor = true;
+	PlayerController->SetInputMode(FInputModeUIOnly());
+
+	if (EndGameWidget_class == nullptr) return;
 	EndGameWidget = CreateWidget<UEndGameWidget>(GetWorld(), EndGameWidget_class);
 
 	if (EndGameWidget == nullptr) return;
+	EndGameWidget->SetTxtGameResult(IsClear);
 	EndGameWidget->AddToViewport();
 }
 
@@ -111,6 +140,7 @@ void ABasisDefaultGameMode::KillEnemy()
 	if (EnemyCntList[StageLv] == CurKilledEnemyCnt) {
 		if (StageLv >= 2) {
 			UE_LOG(LogTemp, Display, TEXT("Game Clear!!"));
+			EndGame(true);
 		}
 		else {
 			UE_LOG(LogTemp, Display, TEXT("Stage END!!"));

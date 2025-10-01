@@ -33,6 +33,8 @@ public:
 	FTimerHandle StageStartHandle;
 
 public:
+	APlayerController* PlayerController;
+
 	// for umg
 	void SetPlayerKillCount(int32 Killcount);
 	void SetPlayerHP(float HP);
@@ -40,6 +42,7 @@ public:
 	void SetPlayerAmmo(int32 PlayerAmmo);
 
 private:
+	UPROPERTY(EditDefaultsOnly)
 	float StageLimitTime = 60;
 	FTimerHandle StageTimeManageHandle;
 	FTimerHandle StageTimeUpdateHandle;
@@ -53,9 +56,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<class ACharacterBase> EmemyClass;
 
-	void CreateMainHUD();
+	void ReadyGame();
 	void StartGame();
-	void EndGame();
+	void EndGame(bool IsClear);
 
 	int32 CurKilledEnemyCnt = 0;
 	void KillEnemy();
