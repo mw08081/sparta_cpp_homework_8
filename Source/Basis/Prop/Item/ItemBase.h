@@ -25,6 +25,9 @@ public:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
+	class USceneComponent* Root;
+
+	UPROPERTY(EditDefaultsOnly)
 	class UStaticMeshComponent* Mesh;
 
 	UFUNCTION()

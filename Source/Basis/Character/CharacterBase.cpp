@@ -62,7 +62,7 @@ void ACharacterBase::Hit(int32 Damage, AActor* ByWho)
 
 void ACharacterBase::IncreaseKillCount()
 {
-	UE_LOG(LogTemp, Display, TEXT("Character Base IncreaseKillCount %d"), KillCount);
+	//UE_LOG(LogTemp, Display, TEXT("Character Base IncreaseKillCount %d"), KillCount);
 
 	KillCount++;
 	CurGameMode->KillEnemy();
@@ -89,6 +89,9 @@ int32 ACharacterBase::GetCurHP() const
 void ACharacterBase::SetCurHP(int32 _HP)
 {
 	this->CurHP = _HP;
+	if (CurHP < 0) {
+		CurHP = 0;
+	}
 
 	CurGameMode->SetPlayerHP((float)CurHP / MaxHP);
 }

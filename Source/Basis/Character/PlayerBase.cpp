@@ -65,6 +65,8 @@ void APlayerBase::SetupPlayerInputComponent(UInputComponent* PlayerInputControll
 		
 		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Started, this, &APlayerBase::Zoom);
 		EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Completed, this, &APlayerBase::Zoom);
+		EnhancedInputComponent->BindAction(CamOnlyAction, ETriggerEvent::Started, this, &APlayerBase::CamOnly);
+		EnhancedInputComponent->BindAction(CamOnlyAction, ETriggerEvent::Completed, this, &APlayerBase::CamOnly);
 
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &APlayerBase::EnterFire);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, (void (APlayerBase::*)(const FInputActionValue&)) &APlayerBase::ExitFire);
@@ -90,9 +92,22 @@ void APlayerBase::Look(const FInputActionValue& Value)
 
 	if (Controller != nullptr) 
 	{
-		AddControllerYawInput(LookAxis.X);
-		AddControllerPitchInput(LookAxis.Y * -1);
+		if (bIsInterceptMouseInput) {
+			CameraBoom->AddLocalRotation(FRotator(LookAxis.Y, LookAxis.X, 0).Quaternion());
+		}
+		else {
+			AddControllerYawInput(LookAxis.X);
+			AddControllerPitchInput(LookAxis.Y * -1);
+		}
 	}
+}
+
+void APlayerBase::CamOnly(const FInputActionValue& Value)
+{
+	bool OnKeyboardAltDown = Value.Get<bool>();
+
+	bIsInterceptMouseInput = OnKeyboardAltDown;
+	CameraBoom->bUsePawnControlRotation = !OnKeyboardAltDown;
 }
 
 void APlayerBase::Zoom(const FInputActionValue& Value)
@@ -112,6 +127,7 @@ void APlayerBase::Zoom(const FInputActionValue& Value)
 		CameraBoom->SocketOffset = FVector(4, 30, 80);
 	}
 }
+
 
 
 void APlayerBase::EnterFire(const FInputActionValue& Value)

@@ -39,6 +39,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	class UInputAction* LookAction;
 	UPROPERTY(EditDefaultsOnly)
+	class UInputAction* CamOnlyAction;
+	UPROPERTY(EditDefaultsOnly)
 	class UInputAction* ZoomAction;
 	UPROPERTY(EditDefaultsOnly)
 	class UInputAction* FireAction;
@@ -46,8 +48,13 @@ private:
 	class UInputAction* ReloadAction;
 
 	void Move(const struct FInputActionValue& Value);
+
 	void Look(const struct FInputActionValue& Value);
+
 	void Zoom(const struct FInputActionValue& Value);
+
+	void CamOnly(const struct FInputActionValue& Value);
+	bool bIsInterceptMouseInput;
 
 	void EnterFire(const struct FInputActionValue& Value);
 	void ExitFire(const struct FInputActionValue& Value);
@@ -57,5 +64,4 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	class UAnimMontage* AMM_Reload;
 	void Reload(const struct FInputActionValue& Value);
-
 };

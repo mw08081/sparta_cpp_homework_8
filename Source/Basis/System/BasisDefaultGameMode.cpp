@@ -105,11 +105,14 @@ void ABasisDefaultGameMode::StartGame()
 	CurKilledEnemyCnt = 0;
 
 	int32 EnemyCnt = EnemyCntList[StageLv];
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+
 	for (int32 i = 0; i < EnemyCnt; i++) {
 		FNavLocation LOC;
-		NavSystem->GetRandomPoint(LOC);
-
-		GetWorld()->SpawnActor<ACharacterBase>(EmemyClass, LOC.Location, FRotator::ZeroRotator);
+		if (NavSystem->GetRandomPoint(LOC)) {
+			GetWorld()->SpawnActor<ACharacterBase>(EmemyClass, LOC.Location, FRotator::ZeroRotator, SpawnParams);
+		}
 	}
 
 	GetWorld()->GetTimerManager().SetTimer(StageTimeManageHandle, this, &ABasisDefaultGameMode::EndStageTime, StageLimitTime, false);
