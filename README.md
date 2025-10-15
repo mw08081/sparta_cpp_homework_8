@@ -146,25 +146,25 @@
 		}
 		```
 - Hit By Bone(Head;Spine;Other)
-```c++
-ACharacterBase* Target = Cast<ACharacterBase>(OtherActor);
-if (IsValid(Target)) {
-	float Damage = WeaponOwner->Strength;
-
-	if (Hit.BoneName.ToString().StartsWith("Head")) {
-		Damage *= 1.2f;
-		DrawDebugSphere(GetWorld(), Hit.Location, 1.5f, 24, FColor::Red, false, 3);
+	```c++
+	ACharacterBase* Target = Cast<ACharacterBase>(OtherActor);
+	if (IsValid(Target)) {
+		float Damage = WeaponOwner->Strength;
+	
+		if (Hit.BoneName.ToString().StartsWith("Head")) {
+			Damage *= 1.2f;
+			DrawDebugSphere(GetWorld(), Hit.Location, 1.5f, 24, FColor::Red, false, 3);
+		}
+		else if (Hit.BoneName.ToString().StartsWith("Spine")) {
+			Damage *= 0.7f;
+			DrawDebugSphere(GetWorld(), Hit.Location, 1.5f, 24, FColor::Yellow, false, 3);
+		}
+		else {
+			Damage *= 0.4f;
+		}
+		Target->Hit((int)Damage, WeaponOwner);
 	}
-	else if (Hit.BoneName.ToString().StartsWith("Spine")) {
-		Damage *= 0.7f;
-		DrawDebugSphere(GetWorld(), Hit.Location, 1.5f, 24, FColor::Yellow, false, 3);
-	}
-	else {
-		Damage *= 0.4f;
-	}
-	Target->Hit((int)Damage, WeaponOwner);
-}
-```
+	```
 - widget(C++)
 
 ----
