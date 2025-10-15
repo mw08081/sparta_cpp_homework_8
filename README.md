@@ -5,6 +5,8 @@
 - widget(C++)
 - Hit By Bone(Head;Spine;Other)
 
+----
+과제 시연 영상
 - 시작 UI와 ai  
 ![ai startUI](https://github.com/user-attachments/assets/bde219b4-914e-4012-9015-5cdcfeb693d4)
 
