@@ -2,149 +2,149 @@
 
 과제 외 구현한 항목
 - AI(BT, BTTask, BTService)
-- Task
-```c++
-// Patroll
-EBTNodeResult::Type UBTTask_SetRandomPatrolLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
-{
-	UBlackboardComponent* OwnerBlackboard = OwnerComp.GetBlackboardComponent();
-	if (OwnerBlackboard == nullptr) return EBTNodeResult::Failed;
-
-	if (OwnerBlackboard->IsVectorValueSet(GetSelectedBlackboardKey()))
-	{
-		return EBTNodeResult::Succeeded;
-	}
-	else
-	{
-		UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
-		if (NavSystem == nullptr) return EBTNodeResult::Failed;
-
-		FNavLocation LOC;
-		NavSystem->GetRandomPoint(LOC);
-
-		//DrawDebugSphere(GetWorld(), LOC.Location, 25, 25, FColor::Red, true);
-		OwnerBlackboard->SetValueAsVector(GetSelectedBlackboardKey(), LOC.Location);
-
-		return EBTNodeResult::Succeeded;
-	}
-}
-
-// Attack
-EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent& BTC, uint8* NodeMemory)
-{
-	UBlackboardComponent* BBC = BTC.GetBlackboardComponent();
-	if (BBC == nullptr) return EBTNodeResult::Failed;
-
-	// AI 검증
-	AAIController* AIController = BTC.GetAIOwner();
-	if (AIController == nullptr) return EBTNodeResult::Failed;
-
-	//ACharacterBase* AIPawn = Cast<ACharacterBase>(BTC.GetOwner()); // 도 가능
-	AAIBase* AICharacter = static_cast<AAIBase*>(AIController->GetPawn());
-	if(AICharacter == nullptr) return EBTNodeResult::Failed;
-
-	// Target Player 검증
-	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	if (PlayerController == nullptr) return EBTNodeResult::Failed;
-
-	APlayerBase* TargetPawn = static_cast<APlayerBase*>(PlayerController->GetPawn());
-	if (TargetPawn == nullptr) return EBTNodeResult::Failed;
-	 
-	// 공격위치 설정
-	AIController->StopMovement();
-
-	AICharacter->Attack();
-
-	return EBTNodeResult::Succeeded;
-}
-```
-- Servcie
-```c++
-// Find Target
-void UBTService_FindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
-{
-	UBlackboardComponent* OwnerBlackboard = OwnerComp.GetBlackboardComponent();
-	if (OwnerBlackboard == nullptr) return;
-
-	AAIController* MyController = OwnerComp.GetAIOwner();
-	if (MyController == nullptr) return;
-
-	ACharacterBase* MyPawn = Cast<ACharacterBase>(MyController->GetPawn());
-	if (MyPawn == nullptr) return;
-
-	ACharacterBase* TargetPawn = Cast<ACharacterBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	if (TargetPawn == nullptr) return;
-
-	// 시야범위 안에 있는지 검사
-	FVector ToTargetVector = TargetPawn->GetActorLocation() - MyPawn->GetActorLocation();
-	if (ToTargetVector.Length() > SightRange)
-	{
-		if (OwnerBlackboard->IsVectorValueSet(GetSelectedBlackboardKey()) && !OwnerBlackboard->IsVectorValueSet(FName(TEXT("PatrolLocation"))))
+	- Task
+		```c++
+		// Patroll
+		EBTNodeResult::Type UBTTask_SetRandomPatrolLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 		{
-			FVector LastTargetLocation = OwnerBlackboard->GetValueAsVector(GetSelectedBlackboardKey());
-			OwnerBlackboard->SetValueAsVector(FName(TEXT("PatrolLocation")), LastTargetLocation);
-
-			OwnerBlackboard->ClearValue(GetSelectedBlackboardKey());
+			UBlackboardComponent* OwnerBlackboard = OwnerComp.GetBlackboardComponent();
+			if (OwnerBlackboard == nullptr) return EBTNodeResult::Failed;
+		
+			if (OwnerBlackboard->IsVectorValueSet(GetSelectedBlackboardKey()))
+			{
+				return EBTNodeResult::Succeeded;
+			}
+			else
+			{
+				UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(GetWorld());
+				if (NavSystem == nullptr) return EBTNodeResult::Failed;
+		
+				FNavLocation LOC;
+				NavSystem->GetRandomPoint(LOC);
+		
+				//DrawDebugSphere(GetWorld(), LOC.Location, 25, 25, FColor::Red, true);
+				OwnerBlackboard->SetValueAsVector(GetSelectedBlackboardKey(), LOC.Location);
+		
+				return EBTNodeResult::Succeeded;
+			}
 		}
-		return;
-	}
-
-	// 시야각 안에 있는지 검사 
-	FVector MyForwardVector = MyPawn->GetActorForwardVector();
-	MyForwardVector.Normalize();
-	ToTargetVector.Normalize();
-
-	float DotRes = MyForwardVector.Dot(ToTargetVector);
-	bool IsInSight = SightDegree > FMath::RadiansToDegrees(FMath::Acos(DotRes));
-	if (!IsInSight) 
-	{
-		if (OwnerBlackboard->IsVectorValueSet(GetSelectedBlackboardKey()) && !OwnerBlackboard->IsVectorValueSet(FName(TEXT("PatrolLocation"))))
+		
+		// Attack
+		EBTNodeResult::Type UBTT_Attack::ExecuteTask(UBehaviorTreeComponent& BTC, uint8* NodeMemory)
 		{
-			FVector LastTargetLocation = OwnerBlackboard->GetValueAsVector(GetSelectedBlackboardKey());
-			OwnerBlackboard->SetValueAsVector(FName(TEXT("PatrolLocation")), LastTargetLocation);
-
-			OwnerBlackboard->ClearValue(GetSelectedBlackboardKey());
+			UBlackboardComponent* BBC = BTC.GetBlackboardComponent();
+			if (BBC == nullptr) return EBTNodeResult::Failed;
+		
+			// AI 검증
+			AAIController* AIController = BTC.GetAIOwner();
+			if (AIController == nullptr) return EBTNodeResult::Failed;
+		
+			//ACharacterBase* AIPawn = Cast<ACharacterBase>(BTC.GetOwner()); // 도 가능
+			AAIBase* AICharacter = static_cast<AAIBase*>(AIController->GetPawn());
+			if(AICharacter == nullptr) return EBTNodeResult::Failed;
+		
+			// Target Player 검증
+			APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+			if (PlayerController == nullptr) return EBTNodeResult::Failed;
+		
+			APlayerBase* TargetPawn = static_cast<APlayerBase*>(PlayerController->GetPawn());
+			if (TargetPawn == nullptr) return EBTNodeResult::Failed;
+			 
+			// 공격위치 설정
+			AIController->StopMovement();
+		
+			AICharacter->Attack();
+		
+			return EBTNodeResult::Succeeded;
 		}
-		return;
-	}
-
-	// 장애물 판단
-	if (!MyController->LineOfSightTo(TargetPawn))
-	{
-		if(OwnerBlackboard->IsVectorValueSet(GetSelectedBlackboardKey()) && !OwnerBlackboard->IsVectorValueSet(FName(TEXT("PatrolLocation"))))
+		```
+	- Servcie
+		```c++
+		// Find Target
+		void UBTService_FindTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 		{
-			FVector LastTargetLocation = OwnerBlackboard->GetValueAsVector(GetSelectedBlackboardKey());
-			OwnerBlackboard->SetValueAsVector(FName(TEXT("PatrolLocation")), LastTargetLocation);
-
-			OwnerBlackboard->ClearValue(GetSelectedBlackboardKey());
+			UBlackboardComponent* OwnerBlackboard = OwnerComp.GetBlackboardComponent();
+			if (OwnerBlackboard == nullptr) return;
+		
+			AAIController* MyController = OwnerComp.GetAIOwner();
+			if (MyController == nullptr) return;
+		
+			ACharacterBase* MyPawn = Cast<ACharacterBase>(MyController->GetPawn());
+			if (MyPawn == nullptr) return;
+		
+			ACharacterBase* TargetPawn = Cast<ACharacterBase>(GetWorld()->GetFirstPlayerController()->GetPawn());
+			if (TargetPawn == nullptr) return;
+		
+			// 시야범위 안에 있는지 검사
+			FVector ToTargetVector = TargetPawn->GetActorLocation() - MyPawn->GetActorLocation();
+			if (ToTargetVector.Length() > SightRange)
+			{
+				if (OwnerBlackboard->IsVectorValueSet(GetSelectedBlackboardKey()) && !OwnerBlackboard->IsVectorValueSet(FName(TEXT("PatrolLocation"))))
+				{
+					FVector LastTargetLocation = OwnerBlackboard->GetValueAsVector(GetSelectedBlackboardKey());
+					OwnerBlackboard->SetValueAsVector(FName(TEXT("PatrolLocation")), LastTargetLocation);
+		
+					OwnerBlackboard->ClearValue(GetSelectedBlackboardKey());
+				}
+				return;
+			}
+		
+			// 시야각 안에 있는지 검사 
+			FVector MyForwardVector = MyPawn->GetActorForwardVector();
+			MyForwardVector.Normalize();
+			ToTargetVector.Normalize();
+		
+			float DotRes = MyForwardVector.Dot(ToTargetVector);
+			bool IsInSight = SightDegree > FMath::RadiansToDegrees(FMath::Acos(DotRes));
+			if (!IsInSight) 
+			{
+				if (OwnerBlackboard->IsVectorValueSet(GetSelectedBlackboardKey()) && !OwnerBlackboard->IsVectorValueSet(FName(TEXT("PatrolLocation"))))
+				{
+					FVector LastTargetLocation = OwnerBlackboard->GetValueAsVector(GetSelectedBlackboardKey());
+					OwnerBlackboard->SetValueAsVector(FName(TEXT("PatrolLocation")), LastTargetLocation);
+		
+					OwnerBlackboard->ClearValue(GetSelectedBlackboardKey());
+				}
+				return;
+			}
+		
+			// 장애물 판단
+			if (!MyController->LineOfSightTo(TargetPawn))
+			{
+				if(OwnerBlackboard->IsVectorValueSet(GetSelectedBlackboardKey()) && !OwnerBlackboard->IsVectorValueSet(FName(TEXT("PatrolLocation"))))
+				{
+					FVector LastTargetLocation = OwnerBlackboard->GetValueAsVector(GetSelectedBlackboardKey());
+					OwnerBlackboard->SetValueAsVector(FName(TEXT("PatrolLocation")), LastTargetLocation);
+		
+					OwnerBlackboard->ClearValue(GetSelectedBlackboardKey());
+				}
+				return;
+			}
+		
+			OwnerBlackboard->SetValueAsVector(GetSelectedBlackboardKey(), TargetPawn->GetActorLocation());
+			OwnerBlackboard->ClearValue(FName(TEXT("PatrolLocation")));
+			//DrawDebugSphere(GetWorld(), TargetPawn->GetActorLocation(), 25, 25, FColor::Blue, false, 1.0f);
 		}
-		return;
-	}
-
-	OwnerBlackboard->SetValueAsVector(GetSelectedBlackboardKey(), TargetPawn->GetActorLocation());
-	OwnerBlackboard->ClearValue(FName(TEXT("PatrolLocation")));
-	//DrawDebugSphere(GetWorld(), TargetPawn->GetActorLocation(), 25, 25, FColor::Blue, false, 1.0f);
-}
-
-// Aim
-void UBTService_AimTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
-{
-	UBlackboardComponent* BlackBoardComp = OwnerComp.GetBlackboardComponent();
-	if (BlackBoardComp == nullptr) return;
-
-	AAIController* MyController = OwnerComp.GetAIOwner();
-	if (MyController == nullptr) return;
-
-	ACharacterBase* MyCharacter = Cast<ACharacterBase>(MyController->GetPawn());
-	if (MyCharacter == nullptr) return;
-
-	if (BlackBoardComp->IsVectorValueSet(GetSelectedBlackboardKey()))
-	{
-		FVector ToTargetVector = BlackBoardComp->GetValueAsVector(GetSelectedBlackboardKey()) - MyCharacter->GetActorLocation();
-		MyCharacter->SetActorRotation(ToTargetVector.Rotation());
-	}
-}
-```
+		
+		// Aim
+		void UBTService_AimTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+		{
+			UBlackboardComponent* BlackBoardComp = OwnerComp.GetBlackboardComponent();
+			if (BlackBoardComp == nullptr) return;
+		
+			AAIController* MyController = OwnerComp.GetAIOwner();
+			if (MyController == nullptr) return;
+		
+			ACharacterBase* MyCharacter = Cast<ACharacterBase>(MyController->GetPawn());
+			if (MyCharacter == nullptr) return;
+		
+			if (BlackBoardComp->IsVectorValueSet(GetSelectedBlackboardKey()))
+			{
+				FVector ToTargetVector = BlackBoardComp->GetValueAsVector(GetSelectedBlackboardKey()) - MyCharacter->GetActorLocation();
+				MyCharacter->SetActorRotation(ToTargetVector.Rotation());
+			}
+		}
+		```
 - Hit By Bone(Head;Spine;Other)
 ```c++
 ACharacterBase* Target = Cast<ACharacterBase>(OtherActor);
